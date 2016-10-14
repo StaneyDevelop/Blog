@@ -1,321 +1,104 @@
-<span style="color: #000000;"><a style="color: #000000;" href="http://java-help.ru/wp-content/uploads/2016/07/java-helpsplash.png"><img class="size-full wp-image-2583 aligncenter" src="http://java-help.ru/wp-content/uploads/2016/07/java-helpsplash.png" alt="java-help=splash" width="1280" height="720" /></a></span>
+Всем привет. В данном курсе мы будем писать клиент-серверное приложение для сайтов, работающих на CMS WordPress. Курс разбит на несколько частей. Эта часть будет посвящена основам.
 
-<span style="color: #000000;">Всем привет. Начинаем серию уроков, посвященных созданию реального приложения на Android. В интернете довольно много уроков "для начинающих", а вот примеров создания реальных приложений можно посчитать по пальцам. К тому же некоторые из них платные, а те, что даются бесплатно, не блещут качеством или тянутся очень долго. В данном мини-курсе мы будем писать клиент-серверное приложение для сайтов, работающих на <strong>CMS WordPress</strong>. У <strong>WordPress</strong> есть разные версии API. Мы ориентируемся на API v2.</span>
-<h2><span style="color: #000000;">Ведение</span></h2>
-<span style="color: #000000;">Эта часть будет посвящена основам. Здесь будут присутствовать советы по реализации фундаментальных областей построения приложения. Будут затронуты темы планирования архитектуры, создания логики и UI.</span>
+Ведение
+Здесь будут присутствовать советы по реализации фундаментальных областей построения приложения. Будут затронуты темы планирования архитектуры, создания логики и UI.
 
-<span style="color: #000000;">[su_spoiler title="Необходимый уровень знаний"]Данные уроки будут особенно интересны и полезны для начинающих, так как будет сделан упор на элементарные области связанные с программированием на Android. Такие как Activity, Fragment, ListView (или RecyclerView),  Adapter и многие другие. Применяя эти знания можно будет быстрее начать использовать более сложные и новые инструменты. А пока стоит уточнить, что для усвоения данного материала необходимо, чтобы читатель уже обладал знаниями основ JavaSE (классы, интерфейсы, пакеты), навыками работы с Android Studio и Gradle (сборка проекта, настройка устройства для запуска и отладки приложений), иерархия файлов проекта Android Studio (исходный код, ресурсы)[/su_spoiler]</span>
+Необходимый уровень знаний
+Данные уроки будут особенно интересны и полезны для начинающих, так как будет сделан упор на элементарные области связанные с программированием на Android. Такие как Activity, Fragment, ListView (или RecyclerView), Adapter и многие другие. Применяя эти знания можно будет быстрее начать использовать более сложные и новые инструменты. А пока стоит уточнить, что для усвоения данного материала необходимо, чтобы читатель уже обладал знаниями основ JavaSE (классы, интерфейсы, пакеты), навыками работы с Android Studio и Gradle (сборка проекта, настройка устройства для запуска и отладки приложений), иерархия файлов проекта Android Studio (исходный код, ресурсы)
+Для начала нужно определиться с задачей. Обдумать варианты реализации решения. Глобальная задача подразумевает получение, хранение, обновление и вывод информации о статьях с сайта. Разделим эту задачу на части. Предположим, что у нас будет начальный экран, который будет демонстрировать превью статей.
+Для решения мы создадим контейнер, который будет в себе содержать список, каждый элемент которого отображает данные о конкретной статье. В данной статье мы будем заниматься созданием собственно самого списка.
 
-<span style="color: #000000;">Для начала нужно определиться с задачей. Обдумать варианты реализации решения. Глобальная задача подразумевает получение, хранение, обновление и вывод информации о статьях с сайта. Разделим эту задачу на части. Предположим, что у нас будет начальный экран, который будет демонстрировать превью статей.</span>
+Начало работы
+Создайте новый проект в Android Studio.
+Приложение предназначено только для смартфонов и планшетов, поэтому смело выбирайте целевой девайс только Phone and Tablet. В шаблонах выберите Add No Activity.
+По умолчанию Android Studio создаёт тему для приложения, которая включает в себя автоматическую установку Toolbar'а для всех экранов. Давайте изменим родителя AppTheme в файле styles.xml по пути /res с DarkActionBar на NoActionBar:
+У нас не будет необходимости в стандартном Toolbar'е, т.к. в следующих уроках мы будем подключать свой.
 
-[caption id="attachment_2644" align="aligncenter" width="360"]<a style="color: #000000;" href="http://java-help.ru/wp-content/uploads/2016/09/tempsmall.jpg"><img class="wp-image-2644 size-full" src="http://java-help.ru/wp-content/uploads/2016/09/tempsmall.jpg" alt="tempsmall" width="360" height="640" /></a> <span style="color: #000000;">Примерно так должен будет выглядеть экран со списком превью статей</span>[/caption]
+Написание кода
+Для запуска приложения необходимо создать точку входа - MainActivity. Для начала создания функционала связанного с UI создайте в главном пакете подпакет .ui. Наши activity мы будем хранить в пакете .ui.activities. Создайте класс MainActivity в пакете .ui.activities. Унаследуйте класс MainActivity от android.support.v7.app.AppCompatActivity
+Для работы MainActivity необходимо создать его представление
+Для этого в папке /res/layout создайте файл main_activity.xml. В AndroidStudio такой тип файлов в контекстном меню называется "Layout resource file". В файле обязательно должен быть указан главный контейнер этого представления. Укажите в качестве главного контейнера LinearLayout.
+Далее необходимо внести изменения в класс MainActivity
+Первым делом нужно переопределить метод onCreate в нашей Activity. В методе onCreate мы вызываем метод setContentView и передаем на вход id лейаута, который мы создали ранее. Таким образом мы установили содержимое для нашей Activity.
+Для запуска приложения необходимо внести изменения и указать точку входа в AndroidManifest
+Давайте пропишем наше Activity в Manifest-файле. В блоке intent-filter мы говорим системе, что MainActivity является точкой входа в приложение. Так же стоит указать заранее, что мы не хотим, чтобы приложение поворачивало экран при наклоне телефона. Сейчас нас интересует только портретная ориентация, поэтому в блок activity добавим строчку android:screenOrientation="portrait"
+Теперь приложение готово к запуску
+Сейчас мы реализовали один контейнер, который далее будет содержать в себе все необходимые для работы приложения элементы, а так же заниматься управлением их поведением. Позже для следующих задач в приложение будут добавлены ещё несколько Activity
 
-<span style="color: #000000;">Для решения мы создадим контейнер, который будет в себе содержать список, каждый элемент которого отображает данные о конкретной статье. В данной статье мы будем заниматься созданием созданием собственно самого списка.</span>
-<h2><span style="color: #000000;">Начало работы</span></h2>
-[caption id="attachment_2613" align="alignnone" width="1664"]<a style="color: #000000;" href="http://java-help.ru/wp-content/uploads/2016/08/begin2.png"><img class="wp-image-2613 size-full" src="http://java-help.ru/wp-content/uploads/2016/08/begin2.png" alt="begin2" width="1664" height="496" /></a> <span style="color: #000000;">Создайте новый проект в Android Studio. Приложение предназначено только для смартфонов и планшетов, поэтому смело выбирайте целевой девайс только Phone and Tablet. В шаблонах выберите Add No Activity.</span>[/caption]
+Создание фрагмента
+Фрагменты были созданы для того, чтобы отделить работу с контекстом приложения и работу с UI. Так же ими очень удобно управлять внутри одного Activity. Изменять представление экранов для разных задач, а так же комбинировать их и заменять одни на другие.
+Нам необходимо создать один фрагмент для представления одного экрана, задача которого отображать список.
+Необходимо сначала для всех фрагментов создать пакет .ui.fragments и внутри него создать класс MainFragment. Затем унаследовать его от класса android.support.v4.app.Fragment.
+Для работы MainFragment необходимо создать его представление
+По пути /res/layout создаём файл main_fragment.xml (таким же образом как мы создавали представление для MainActivity).
+Далее необходимо внести изменения в класс MainFragment
+Первым делом нужно переопределить метод onCreateView класса Fragment. В методе onCreateView необходимо установить представление для этого фрагмента и вернуть его в этом методе. Для этого мы создаём экземпляр класса View. Для его создания можно воспользоваться экземпляром класса LayoutInflater, который идёт входным параметром в методе onCreateView. У экземпляра класса LayoutInflater нужно вызвать метод inflate и передать на вход id лейоута, который мы создали специально для фрагмента
+Где важно R.layout.main_fragment - это идентификатор лейоута который мы создали специально для фрагмента
+container - экземпляр класса ViewGroup, который здесь используется для указания LayoutParams, а крайний входной элемент типа boolean (false) означает что мы не хотим чтобы наше представление не становилось дочерним элементом контейнера который мы подаём на вход в метод inflate
+Теперь фрагмент имеет собственное представление и готов к использованию
 
-<span style="color: #000000;">По умолчанию Android Studio создаёт тему для приложения, которая включает в себя автоматическую установку Toolbar'а для всех экранов. Давайте изменим родителя <strong>AppTheme</strong> в файле <em>styles.xml</em> по пути <em>/res</em> с <strong>DarkActionBar</strong> на <strong>NoActionBar</strong>:</span>
-<pre class="EnlighterJSRAW" data-enlighter-language="xml">&lt;resources&gt;
-    &lt;style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"&gt;
-        &lt;item name="colorPrimary"&gt;@color/colorPrimary&lt;/item&gt;
-        &lt;item name="colorPrimaryDark"&gt;@color/colorPrimaryDark&lt;/item&gt;
-        &lt;item name="colorAccent"&gt;@color/colorAccent&lt;/item&gt;
-    &lt;/style&gt;
-&lt;/resources&gt;</pre>
-<span style="color: #000000;">У нас не будет необходимости в стандартном Toolbar'е, т. к. в следующих уроках мы будем подключать свой.</span>
-<h2><span style="color: #000000;">Написание кода</span></h2>
-<span style="color: #000000;">Для запуска приложения необходимо создать точку входа - <strong>MainActivityю </strong></span><span style="color: #000000;">Для начала создания функционала связанного с UI создайте в главном пакете подпакет <em>.ui. </em>Наши<em> <strong>a</strong></em></span><strong>ctivity</strong> мы будем хранить в пакете <em>.ui.activities. </em>Создайте класс <strong>MainActivity</strong> в пакете <em>.ui.activities. </em><span style="color: #000000;">Унаследуйте класс <strong>MainActivity</strong> от <strong>android.support.v7.app.AppCompatActivity</strong></span>
+Подключаем фрагмент к Activity
+Всеми фрагментами внутри activity управляет FragmentManager
+Для отображения фрагмента необходимо создать контейнер в представлении MainActivity
+В R.layout.main_activity внутри главного контейнера создать контейнер класса FrameLayout (самый простой контейнер). Указать у него id для того, чтобы его можно было идентифицировать и использовать. Желательно в размерах ширины и высоты указать match_parent
+Нам нужно добавить MainFragment в MainActivity
+Для этого нужно получить экземпляр класса FragmentManager. Так как мы используем support библиотеку, нам необходимо вызвать у MainActivity метод getSupportFragmentManager(). Создайте в классе MainActivity метод private void init(), в котором мы пропишем все необходимые действия для добавления фрагмента. Далее внутри метода init вызвать несколько методов цепочкой:
+getSupportFragmentManager() - возвращает экземпляр класса FragmentManager, у которого можно вызвать beginTransaction()
+beginTransaction() - возвращает экземпляр класса FragmentTransaction, у которого можно вызвать add(). Этим методом мы указываем на создание транзакции, в которой обозначим, что будем делать.
+add() - означает добавление нового фрагмента. Для этого необходим идентификатор контейнера и экземпляр класса фрагмента. Указываем входными параметрами, что хотим добавить фрагмент в контейнер. Этот метод возвращает экземпляр класса FragmentTransaction, у которого можно вызвать commit()
+commit() - указываем, что хотим применить операции. Конкретно в нашем случае добавить фрагмент в список фрагментов MainActivity
+Добавьте вызов нашего нового метода init() внутри метода onCreate сразу после setContentView
+Приложение готово к запуску, и теперь главным представлением вашего приложения будет представление MainFragment
+MainActivity помимо своего представления, включает в себя MainFragment, который реализует свою часть представления экрана
+Данная часть описывает процесс создания каркаса, на котором строится начало практически любого проекта. Важно понимать, что это не единственно верное решение, а лишь один из способов достижения цели. Теперь необходимо перейти к реализации работы со списком. Как конкретно будет реализовано решение этой задачи, мы опишем далее более детально.
 
-[su_spoiler title="Для работы <strong>MainActivity</strong> необходимо создать его представление"]
+Устанавливаем RecyclerView во фрагмент
+Виджет RecyclerView служит для реализации представления данных в виде списка. Конкретно мы его будем использовать для вывода списка состоящего из краткого содержания статей с wordpress сайта. Он имеет ряд преимуществ перед ListView, который ранее использовался для данной задачи, и для его подключения необходимо подключить библиотеку com.android.support:recyclerview-v7
+Добавьте зависимость compile 'com.android.support:recyclerview-v7:24.0.0' в app/build.gradle для подключения RecyclerView.
+Магия gradle
+Любые изменения в файлах gradle вступят в силу только после того как произойдёт синхронизация gradle. Описание этих процессов выходит за рамки данной статьи. Главное в этом деле запомнить простое правило. После любых изменений в файлах gradle при работе в Android Studio нажимать на кнопку "Sync project with Gradle files"
+Добавьте RecyclerView в layout-файл класса MainFragment. Для этого в файле /res/layout/main_fragment.xml, внутри главного контейнера создайте виджет android.support.v7.widget.RecyclerView (в превью должно появится представление RecyclerView в виде списка Items, если всё сделано верно). Укажите id у RecyclerView для того, чтобы его можно было идентифицировать в классе фрагмента. В размерах ширины и высоты нашего RecyclerView указать match_parent(растянуться максимально по ширине и высоте родителя)
+Теперь, для того, чтобы использовать RecyclerView, необходимо добавить код для работы с RecyclerView в MainFragment. В классе MainFragment создайте поле private RecyclerView list_posts. Давайте проинициализируем наш RecyclerView во фрагменте:
+Представление MainFragment включает в себя список
+Пока мы сделали всё, что было можно сделать с RecyclerView. Теперь нужно создать Adapter и подключить к нашему list_posts.
+Стиль написания кода
+До этого момента для написания кода использовался стиль CamelCase. Сейчас для названия переменной RecyclerView list_posts я использовал правило написания, при котором все переменные в коде, которые представляют ресурсы (например элементы xml разметки) именуются так же, как те сущности, которые они представляют. Таким образом, читая код, можно визуально определить, к чему относится конкретная переменная без контекста. Важно понимать, что данный метод не является единственно верным и обязательным к применению.
 
-<span style="color: #000000;">Для этого в</span> папке  <em>/res/layout</em> создайте файл <em>main_activity.xml. </em><span style="color: #000000;">В <strong>AndroidStudio</strong> такой тип файлов в контекстном меню называется "Layout resource file". </span><span style="color: #000000;">В файле обязательно должен быть указан главный контейнер этого представления. Укажите в качестве главного </span><span style="color: #000000;">контейнера <strong>LinearLayout.</strong></span>
+Создаём Adapter
+Adapter нужен для управления тем какие элементы у списка будут, сколько их будет, и как именно они будут отображаться.
+Почему Adapter обязательно нужен
+Очень важно осознать необходимость данного инструмента (хотя это не обязательно единственный способ решения) на ранних этапах разработки. И так же важно понять как работает адаптер. Попробую описать неочевидную проблему через аналогию. Если перед вами поставили задачу - "должны проехать несколько машин". Задача элементарна до безобразия. Особенно если представлять это, как задачу которую нужно решить в реальной жизни, руками и с реальными машинами. Каким-то образом можно получить 5(а количество может быть любым) машин(любой марки, цвета и остальных составляющих) и провезти их в один ряд. Очень простой пример.
+А теперь обратимся к списку в программировании. Нельзя просто сказать "нарисуй мне список". Список не может по умолчанию работать с любыми типами данных (желаемым для нас образом). Нужно обязательно указать сколько элементов будет, как они будут выглядеть и их поведение.
+Итак отображение списка можно реализовать так:
+Или например так:
+Адаптер занимается этой задачей. Внутри него мы можем точно указать всё необходимое, чтобы список отобразился таким, как нам это необходимо. А важно то, что указать "как нам необходимо" нужно обязательно и в любом случае. Даже если реализация отображения списка элементарная.
+Необходимо для всех адаптеров создать пакет .ui.adapters. Внутри создать класс PostsAdapter.
+Привяжем наш адаптер к контексту, это нам понадобится позднее. Для этого создадим в классе PostsAdapter поле private Context context. И реализуем public конструктор PostsAdapter с одним входным параметром - объект класса Context. Внутри конструктора присвоим входной объект нашему context
+Мы уже имеем некоторое представление о том что делает Adapter. Он указывает RecyclerView, что нужно отобразить и каким образом. Для этого ему нужны данные. Поэтому внутри класса PostsAdapter необходимо создать поле с данными. Для первого запуска мы сделаем поле private List data для заглушки (позже мы переделаем это для работы с данными из SQLite базы данных) и попробуем вывести список из ранее заданных строк
+Теперь как отображать данные. За это отвечает класс RecyclerView.ViewHolder. Наследуясь от него мы сможем создать свой класс, в которым опишем, как будет выглядеть каждый элемент нашего списка. Внутри класса PostsAdapter нужно создать public class PostHolder и унаследовать его от класса RecyclerView.ViewHolder. Далее реализовать конструктор класса PostHolder, в котором указать входным параметром View v . И в первой строчке конструктора вызвать super(v)
+PostHolder готов к использованию. Теперь укажем внутри него то, что будет отображать наш Adapter в каждом элементе RecyclerView.
+Первым делом создадим представление элемента
+По пути /res/layout создаём файл post.xml. В этом файле, внутри главного контейнера создать TextView виджет. Указать у него id. Желательно в размерах ширины и высоты указать wrap_content. Сейчас мы хотим вывести вертикальный список с элементами, которые растягиваются по всей ширине. Необходимо проверить чтобы у главного контейнера размер высоты стоял wrap_content (иначе каждый элемент растянется по всей высоте экрана)
+Далее добавим изменения в класс PostHolder. Создадим внутри поле public TextView text. Это поле указывает на виджет, который будет использоваться для вывода некоторого текста в элементах нашего списка. Далее внутри конструктора класса PostHolder инициализируем наш text с помощью вызова метода v.findViewById
+Теперь PostHolder настроен и пора использовать его в нашем PostsAdapter . Унаследуем PostsAdapter от RecyclerView.Adapter Нужно обязательно реализовать три метода
+getItemCount - это метод в который нужно вернуть количество элементов, которое адаптер будет готов отрисовать. Сейчас у нас простая реализация и мы хотим вывести все элементы которые содержаться в List data. Поэтому в методе getItemCount мы вернём data.size(). И добавим перед return проверку. if(data == null) пусть при таком условии getItemCount вернёт 0. Таким образом мы избежим NullPointerException и правильно обработаем ситуацию, при которой данных нет.
+onCreateViewHolder - в этом методе нужно создать холдер и вернуть его. Именно этот холдер будет указывать, что отображать в каждом элементе списка
+У нас есть реализация холдера - PostHolder. И onCreateViewHolder должен быть настроен для того, чтобы мы вернули именно PostHolder. А чтобы создать PostHolder нам необходим экземпляр класса View, и для его создания мы воспользуемся методом который применяли при создании фрагмента
+Получим View с помощью LayoutInflater и его метода inflate. Только LayoutInflater нам нужно будет создать самим, используя статический метод from. Для этого метода необходим экземпляр класса Context. Используем объект context класса PostsAdapter
+Получение View с помощью inflate было описано ранее. Теперь на вход этому методу необходимо подать идентификатор нашего представления R.layout.post, объект класса ViewGroup, входящий параметр метода onCreateViewHolder, и false. И вернуть в конце метода onCreateViewHolder объект класса PostHolder. То есть использовать полученный View vи вызвать new PostHolder(v)
+onBindViewHolder - этот метод будет вызываться каждый раз, когда адаптеру потребуется отрисовать новый элемент. На входе получаем готовый объект холдера (в нашем конкретном случае это PostHolder) - holder и номер элемента - position. Используя эти два параметра можно обозначить логику отрисовки элементов. Так сейчас мы укажем, что у каждого PostHolder будет применяться текст из data в элемент text. Для этого внутри метода onBindViewHolder мы укажем holder.text.setText(data.get(position)). Что значит - каждому n элементу holder.text отрисовать текст из n элемента data
+AndroidStudio должна помочь реализовать эти методы автоматически при наследовании от RecyclerView.Adapter И осталось создать систему при которой будет возможно изменять данные у адаптера. То есть List data. Для этого создаём в классе PostsAdapter метод public void swapData(List d). Внутри этого метода присваиваем объект d к data.
+MainFragment в своей логике использует функционал адаптера PostsAdapter
+PostsAdapter готов к использованию
 
-[/su_spoiler]
-<pre class="EnlighterJSRAW" data-enlighter-language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"&gt;
-&lt;/LinearLayout&gt;</pre>
-<span style="color: #000000;">[su_spoiler title="Далее необходимо внести изменения в класс <strong>MainActivity</strong>"]</span>
+Подключаем PostsAdapter к RecyclerView в MainFragment
+Создадим в классе MainFragment поле private PostsAdapter adapter и метод private void init без входных параметров. Добавим вызов этого метода сразу после вызова метода initViews внутри метода onCreateView. Теперь внутри метода init можно работать с виджетами и быть уверенными в том что они точно проинициализированы.
+Реализуем PostsAdapter внутри MainFragment и подключим его к list_posts
+Внутри метода init инициализируем PostsAdapter и входящим параметром в конструктор PostsAdapter передаём контекст используя метод getActivity. Далее нужно добавить настройку к нашему list_posts. В RecyclerView есть сущность которая руководит тем каким образом элементы будут идти друг за другом. Нам необходима самая простая реализация выводящая элементы по порядку в один столбец. Для этого мы воспользуемся классом LinearLayoutManager. Создадим экземпляр этого класса. В конструктор LinearLayoutManager необходимо подать контекст и мы его можем получить используя метод getActivity. И укажем нашему list_posts это менеджер с помощью метода setLayoutManager.
+Пришло время установить PostsAdapter adapterк RecyclerView list_posts. Это можно сделать вызвав метод setAdapter у list_posts
+Теперь адаптер и RecyclerView работают вместе. Но RecyclerView никаких данных пока не отображает. Для того чтобы создать эти данные мы следующей строкой после list_posts.setAdapter(adapter) создадим объект класса List и проинициализируем его. Добавим в него несколько элементов и укажем адаптеру, что мы хотим использовать эти данные. Это можно сделать с помощью метода swapData, который мы специально для этого сделали в классе PostsAdapter
+MainFragment использует функционал адаптера PostsAdapter для формирования представления элементов списка в своём представлении
+Теперь у нас есть список, RecyclerView list_posts, который выводит данные из List data таким образом, который мы реализовали в классе PostsAdapter
+Пример запущенного приложения на устройстве Nexus5 Android 6.0.1
 
-<span style="color: #000000;">Первым делом нужно переопределить метод <code class="EnlighterJSRAW" data-enlighter-language="java">onCreate</code> в нашей <strong>Activity</strong>. В методе <code class="EnlighterJSRAW" data-enlighter-language="java">onCreate</code> мы вызываем метод  <code class="EnlighterJSRAW" data-enlighter-language="java">setContentView</code> и передаем на вход id лейаута, который мы создали ранее. Таким образом мы установили содержимое для нашей <strong>Activity</strong>.</span>
-
-<span style="color: #000000;">[/su_spoiler]</span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">public class MainActivity extends AppCompatActivity{
-    @Override
-    protected void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
-    }
-}</pre>
-<span style="color: #000000;">[su_spoiler title="Для запуска приложения необходимо внести изменения и указать точку входа в <strong>AndroidManifest"]</strong></span>
-
-Давайте пропишем наше <strong>Activity</strong> в Manifest-файле. В блоке intent-filter мы говорим системе, что <strong>MainActivity</strong> является точкой входа в приложение. Так же стоит указать заранее, что мы не хотим, чтобы приложение поворачивало экран при наклоне телефона. Сейчас нас интересует только портретная ориентация, поэтому в блок activity добавим строчку <code class="EnlighterJSRAW" data-enlighter-language="xml">android:screenOrientation="portrait"</code>
-
-<span style="color: #000000;">[/su_spoiler]</span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">&lt;manifest package="com.javahelp.wpreader"
-          xmlns:android="http://schemas.android.com/apk/res/android"&gt;
-    &lt;application
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme"&gt;
-        &lt;activity
-            android:name=".ui.activities.MainActivity"
-            android:screenOrientation="portrait"&gt;
-            &lt;intent-filter&gt;
-                &lt;action android:name="android.intent.action.MAIN" /&gt;
-                &lt;category android:name="android.intent.category.LAUNCHER" /&gt;
-            &lt;/intent-filter&gt;
-        &lt;/activity&gt;
-    &lt;/application&gt;
-&lt;/manifest&gt;</pre>
-<span style="color: #000000;">Теперь приложение готово к запуску</span>
-<blockquote><span style="color: #000000;">Сейчас мы реализовали один контейнер, который далее будет содержать в себе все необходимые для работы приложения элементы, а так же заниматься управлением их поведением. Позже для следующих задач в приложение будут добавлены ещё несколько <strong>Activity</strong></span></blockquote>
-<h2><span style="color: #000000;">Создание фрагмента</span></h2>
-<span style="color: #000000;">Фрагменты были созданы для того, чтобы отделить работу с контекстом приложения и работу с UI. Так же ими очень удобно управлять внутри одного <strong>Activity</strong>. Изменять представление экранов для разных задач, а так же комбинировать их и заменять одни на другие.</span>
-
-<span style="color: #000000;">Нам необходимо создать один фрагмент для представления одного экрана, задача которого отображать список.</span>
-
-<span style="color: #000000;">Необходимо сначала для всех фрагментов создать пакет <em>.ui.fragments</em> и внутри него создать класс <strong>MainFragment</strong>. Затем унаследовать его от класса <strong>android.support.v4.app.Fragment</strong>.</span>
-
-<span style="color: #000000;"><strong>[su_spoiler title="</strong>Для работы <strong>MainFragment </strong>необходимо создать его представление"]</span>
-
-<span style="color: #000000;">По пути <em>/res/layout</em> создаём файл <em>main_fragment.xml</em> (т</span><span style="color: #000000;">аким же образом как мы создавали представление для <strong>MainActivity</strong>).</span>
-
-<span style="color: #000000;">[/su_spoiler]</span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"&gt;
-&lt;/LinearLayout&gt;</pre>
-<span style="color: #000000;"><strong>[su_spoiler title="</strong>Далее необходимо внести изменения в класс <strong>MainFragment"]</strong></span>
-
-<span style="color: #000000;">Первым делом нужно переопределить метод <code class="EnlighterJSRAW" data-enlighter-language="java">onCreateView</code> класса <strong>Fragment</strong>. </span><span style="color: #000000;">В методе <code class="EnlighterJSRAW" data-enlighter-language="java">onCreateView</code> необходимо установить представление для этого фрагмента и вернуть его в этом методе. Для этого мы создаём</span> <span style="color: #000000;">экземпляр класса</span> <span style="color: #000000;"><strong>View</strong>. Для его создания можно воспользоваться экземпляром класса <strong>LayoutInflater</strong>, который идёт входным параметром в методе <code class="EnlighterJSRAW" data-enlighter-language="java">onCreateView</code></span><span style="color: #000000;">. У экземпляра класса <strong>LayoutInflater</strong> нужно вызвать метод <code class="EnlighterJSRAW" data-enlighter-language="java">inflate</code> и передать на вход id лейаута, который мы создали специально для фрагмента</span>
-
-<span style="color: #000000;">[/su_spoiler]</span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">public class MainFragment extends Fragment{
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View v = inflater.inflate(R.layout.main_fragment, container, false);
-        return v;
-    }
-}</pre>
-<ul>
- 	<li><span style="color: #000000;">Где важно <code class="EnlighterJSRAW" data-enlighter-language="java">R.layout.main_fragment</code> - это идентификатор лейоута который мы создали специально для фрагмента</span></li>
- 	<li><span style="color: #000000;"><code class="EnlighterJSRAW" data-enlighter-language="java">container</code> - экземпляр класса <strong>ViewGroup</strong>, который здесь используется для указания <strong>LayoutParams</strong>, а крайний входной элемент типа <code class="EnlighterJSRAW" data-enlighter-language="java">boolean</code> (false) означает что мы не хотим чтобы наше представление не становилось дочерним элементом контейнера который мы подаём на вход в метод <code class="EnlighterJSRAW" data-enlighter-language="java">inflate</code></span></li>
-</ul>
-<blockquote><span style="color: #000000;">Теперь фрагмент имеет собственное представление и готов к использованию</span></blockquote>
-<h2><span style="color: #000000;">Подключаем фрагмент к Activity</span></h2>
-<span style="color: #000000;">Всеми фрагментами внутри <strong>activity </strong>управляет <strong>FragmentManager</strong></span>
-
-<span style="color: #000000;">[su_spoiler title="Для отображения фрагмента необходимо создать контейнер в представлении <strong>MainActivity"]</strong></span>
-
-<span style="color: #000000;">В<strong> </strong><code class="EnlighterJSRAW" data-enlighter-language="java">R.layout.main_activity</code> внутри главного контейнера создать контейнер класса <strong>FrameLayout</strong> (самый простой контейнер). </span><span style="color: #000000;">Указать у него id для того, чтобы его можно было идентифицировать и использовать</span><span style="color: #000000;">. Желательно в размерах ширины и высоты указать <code class="EnlighterJSRAW" data-enlighter-language="xml">match_parent</code></span>
-
-<span style="color: #000000;">[/su_spoiler]</span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">&lt;FrameLayout
-  android:id="@+id/main_frame"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"/&gt;</pre>
-<span style="color: #000000;"><strong>[su_spoiler title="</strong>Нам нужно добавить <strong>MainFragment</strong> в <strong>MainActivity"]</strong></span>
-
-<span style="color: #000000;">Для этого нужно получить экземпляр класса  <strong>FragmentManager</strong></span><span style="color: #000000;">. Так как мы используем support библиотеку, нам необходимо вызвать у <strong>MainActivity</strong> метод <code class="EnlighterJSRAW" data-enlighter-language="java">getSupportFragmentManager()</code></span><span style="color: #000000;">. Создайте в классе </span><strong style="color: #000000;">MainActivity</strong><span style="color: #000000;"> метод </span><code class="EnlighterJSRAW" data-enlighter-language="java">private void init()</code><span style="color: #555555;">,</span><span style="color: #000000;"> в котором мы пропишем все необходимые действия для добавления фрагмента. Далее внутри метода <code class="EnlighterJSRAW" data-enlighter-language="java">init</code> вызвать несколько методов цепочкой:</span>
-<ul>
- 	<li><span style="color: #000000;"><code class="EnlighterJSRAW" data-enlighter-language="java">getSupportFragmentManager()</code> - возвращает экземпляр класса <strong>FragmentManager</strong>, у которого можно вызвать <code class="EnlighterJSRAW" data-enlighter-language="java">beginTransaction()</code></span></li>
- 	<li><span style="color: #000000;"><code class="EnlighterJSRAW" data-enlighter-language="java">beginTransaction()</code> - возвращает экземпляр класса <strong>FragmentTransaction</strong>, у которого можно вызвать <code class="EnlighterJSRAW" data-enlighter-language="java">add()</code>. Этим методом мы указываем на создание транзакции, в которой обозначим, что будем делать.</span></li>
- 	<li><span style="color: #000000;"><code class="EnlighterJSRAW" data-enlighter-language="java">add()</code> - означает добавление нового фрагмента. Для этого необходим идентификатор контейнера и экземпляр класса фрагмента. Указываем входными параметрами, что хотим добавить фрагмент в контейнер. Этот метод возвращает экземпляр класса <strong>FragmentTransaction</strong>, у которого можно вызвать <code class="EnlighterJSRAW" data-enlighter-language="java">commit()</code></span></li>
- 	<li><span style="color: #000000;"><code class="EnlighterJSRAW" data-enlighter-language="java">commit()</code> - указываем, что хотим применить операции. Конкретно в нашем случае добавить фрагмент в список фрагментов <strong>MainActivity</strong></span></li>
-</ul>
-<span style="color: #000000;">[/su_spoiler]</span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">private void init(){
- getSupportFragmentManager()
- .beginTransaction()
- .add(R.id.main_frame, new MainFragment())
- .commit();
-}</pre>
-<span style="color: #000000;">Добавьте вызов нашего нового метода <code class="EnlighterJSRAW" data-enlighter-language="java">init()</code> внутри метода <code class="EnlighterJSRAW" data-enlighter-language="java">onCreate</code> сразу после <code class="EnlighterJSRAW" data-enlighter-language="java">setContentView</code></span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">@Override
-protected void onCreate(Bundle savedInstanceState){
-  super.onCreate(savedInstanceState);
-  setContentView(R.layout.main_activity);
-  init();
-}</pre>
-<span style="color: #000000;">Приложение готово к запуску, и теперь главным представлением вашего приложения будет представление <strong>MainFragment</strong></span>
-
-[caption id="attachment_2622" align="aligncenter" width="243"]<a style="color: #000000;" href="http://java-help.ru/wp-content/uploads/2016/08/javahelp.png"><img class="wp-image-2622 size-full" src="http://java-help.ru/wp-content/uploads/2016/08/javahelp.png" alt="javahelp" width="243" height="363" /></a> <span style="color: #000000;">MainActivity помимо своего представления, включает в себя MainFragment, который реализует свою часть представления экрана</span>[/caption]
-
-<span style="color: #000000;">Данная часть описывает процесс создания каркаса, на котором строится начало практически любого проекта. <strong>Важно понимать, что это не единственно верное решение, а лишь один из способов достижения цели</strong>. Теперь необходимо перейти к реализации работы со списком. Как конкретно будет реализовано решение этой задачи, мы опишем далее более детально.</span>
-<h2><span style="color: #000000;">Устанавливаем R<span lang="en-US">ecyclerView </span><span lang="ru">во </span><span lang="en-US">фрагмент</span></span></h2>
-<span style="color: #000000;"><span lang="ru">Виджет </span><strong><span lang="en-US">RecyclerView </span></strong><span lang="ru">служит для реализации представления данных в виде списка.</span> <span lang="ru">Конкретно мы его будем использовать для вывода списка состоящего из краткого содержания статей с </span><span lang="en-US">wordpress </span><span lang="ru">сайта. Он имеет ряд преимуществ перед </span><strong><span lang="en-US">ListView</span></strong><span lang="ru">, который ранее использовался для данной задачи, и для его подключения необходимо подключить библиотеку </span><strong><span lang="en-US">com.android.support:recyclerview-v7</span></strong></span>
-
-<span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Добавьте зависимость <span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">compile 'com.android.support:recyclerview-v7:24.0.0'</code></span> в </span><em><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">app/build.gradle </span></em><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">для подключения RecyclerView.</span></span>
-
-<span style="color: #000000;">[su_spoiler title="Магия gradle"]Любые изменения в файлах gradle вступят в силу только после того как произойдёт синхронизация gradle. Описание этих процессов выходит за рамки данной статьи. Главное в этом деле запомнить простое правило. После любых изменений в файлах gradle при работе в Android Studio нажимать на кнопку "Sync project with Gradle files"[/su_spoiler]</span>
-
-<span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Добавьте </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">RecyclerView</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> в layout-файл класса <strong>MainFragment. </strong>Для этого в</span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> файле <em>/res/layout</em></span><em><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">/</span></em><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"><em>main_fragment.xml</em>, внутри главного контейнера создайте виджет </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">android.support.v7.widget.RecyclerView </span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">(в превью должно появится представление </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">RecyclerView</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> в виде списка</span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"> Items</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">, если всё сделано верно). </span><span style="font-family: Calibri; font-size: 11.0pt;">Укажите <strong>id</strong> у RecyclerView для того, чтобы его можно было идентифицировать в классе фрагмента. В</span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> размерах ширины и высоты нашего RecyclerView указать <code class="EnlighterJSRAW" data-enlighter-language="null">match_parent</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">(растянуться максимально по ширине и высоте родителя)</span></span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">&lt;android.support.v7.widget.RecyclerView
-  android:id="@+id/list_posts"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"/&gt;</pre>
-<span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Теперь, для того, чтобы использовать <strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">RecyclerView</span></strong></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">, необходимо добавить код для работы с RecyclerView в <strong>MainFragment</strong>. </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">В классе <strong>MainFragment</strong></span> <span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">создайте поле </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">private RecyclerView list_posts</code></span><span style="font-family: Calibri;"><span style="font-size: 14.6667px; line-height: 22px;">. Давайте проинициализируем наш RecyclerView во фрагменте:</span></span></span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">@Override
-public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-  View v = inflater.inflate(R.layout.main_fragment, container, false);
-  initViews(v);
-  init();
-  return v;
-}
-private void initViews(View v){
-  list_posts = (RecyclerView) v.findViewById(R.id.list_posts);
-}</pre>
-[caption id="attachment_2623" align="aligncenter" width="243"]<a style="color: #000000;" href="http://java-help.ru/wp-content/uploads/2016/08/javahelp2.png"><img class="wp-image-2623 size-full" src="http://java-help.ru/wp-content/uploads/2016/08/javahelp2.png" alt="javahelp2" width="243" height="363" /></a> <span style="color: #000000;">Представление MainFragment включает в себя список</span>[/caption]
-
-<span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Пока мы сделали всё, что было можно сделать с </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">RecyclerView</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. Теперь нужно создать <strong>Adapter</strong> </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">и подключить к нашему <span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">list_posts</code></span>.</span></span>
-
-<span style="color: #000000;">[su_spoiler title="Стиль написания кода"]До этого момента для написания кода использовался стиль CamelCase. Сейчас для названия переменной <code class="EnlighterJSRAW" data-enlighter-language="java">RecyclerView list_posts</code> я использовал правило написания, при котором все переменные в коде, которые представляют ресурсы (например элементы xml разметки) именуются так же, как те сущности, которые они представляют. Таким образом, читая код, можно визуально определить, к чему относится конкретная переменная без контекста. Важно понимать, что данный метод не является единственно верным и обязательным к применению.[/su_spoiler]</span>
-<h2><span style="color: #000000;">Создаём Adapter</span></h2>
-<p style="margin: 0in; font-family: Calibri; font-size: 11.0pt;"><span style="color: #000000;"><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><strong>Adapter</strong> </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">нужен для управления тем какие элементы у списка будут, сколько их будет, и как именно они будут отображаться.</span></span></p>
-<p style="margin: 0in; font-family: Calibri; font-size: 11.0pt;"><span style="color: #000000;">[su_spoiler title="Почему <strong>Adapter</strong> обязательно нужен"]</span></p>
-<span style="color: #000000;">Очень важно осознать необходимость данного инструмента (хотя это не обязательно единственный способ решения) на ранних этапах разработки. И так же важно понять как работает адаптер. Попробую описать неочевидную проблему через аналогию. Если перед вами поставили задачу - "должны проехать несколько машин". Задача элементарна до безобразия. Особенно если представлять это, как задачу которую нужно решить в реальной жизни, руками и с реальными машинами. Каким-то образом можно получить 5(а количество может быть любым) машин(любой марки, цвета и остальных составляющих) и провезти их в один ряд. Очень простой пример.</span>
-
-<span style="color: #000000;">А теперь обратимся к списку в программировании. Нельзя просто сказать "нарисуй мне список". Список не может по умолчанию работать с любыми типами данных (желаемым для нас образом). Нужно обязательно указать сколько элементов будет, как они будут выглядеть и их поведение.</span>
-
-<span style="color: #000000;">Итак отображение списка можно реализовать так:</span>
-<p style="margin: 0in; font-family: Calibri; font-size: 11.0pt;"><span style="color: #000000;"><a style="color: #000000;" href="http://java-help.ru/wp-content/uploads/2016/09/javahelp.wpreader.listissue.png"><img class="size-full wp-image-2652 aligncenter" src="http://java-help.ru/wp-content/uploads/2016/09/javahelp.wpreader.listissue.png" alt="javahelp.wpreader.listissue" width="383" height="63" /></a></span></p>
-<span style="color: #000000;">Или например так:</span>
-<p style="margin: 0in; font-family: Calibri; font-size: 11.0pt;"><span style="color: #000000;"><a style="color: #000000;" href="http://java-help.ru/wp-content/uploads/2016/09/javahelp.wpreader.listissue-1.png"><img class="size-full wp-image-2653 aligncenter" src="http://java-help.ru/wp-content/uploads/2016/09/javahelp.wpreader.listissue-1.png" alt="javahelp.wpreader.listissue (1)" width="123" height="233" /></a></span></p>
-<span style="color: #000000;">Адаптер занимается этой задачей. Внутри него мы можем точно указать всё необходимое, чтобы список отобразился таким, как нам это необходимо. А важно то, что указать "как нам необходимо" нужно обязательно и в любом случае. Даже если реализация отображения списка элементарная.</span>
-<p style="margin: 0in; font-family: Calibri; font-size: 11.0pt;"><span style="color: #000000;"><a style="color: #000000;" href="http://java-help.ru/wp-content/uploads/2016/09/javahelp.wpreader.adapter.png"><img class="size-full wp-image-2654 aligncenter" src="http://java-help.ru/wp-content/uploads/2016/09/javahelp.wpreader.adapter.png" alt="javahelp.wpreader.adapter" width="803" height="303" /></a>[/su_spoiler]</span></p>
-<span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Необходимо д</span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">ля всех адаптеров </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">создать пакет <em>.ui.</em></span><em><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">adapters</span></em><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">. Внутри с</span></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">оздать класс </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><strong>PostsAdapter</strong>.</span></span>
-
-<span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Привяжем наш адаптер к контексту, это нам понадобится позднее. Для этого создадим в классе </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostsAdapter</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> поле </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">private Context context</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. И реализуем </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">public</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> конструктор </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostsAdapter</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> с одним входным параметром - объект класса </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">Context</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. Внутри конструктора присвоим входной объект нашему </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">context</code></span></span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">public class PostsAdapter{
-    private Context context;
-
-    public PostsAdapter(Context c){
-        this.context = c;
-    }
-}</pre>
-<span style="color: #000000;"><span lang="ru">Мы уже имеем некоторое представление о том что делает </span><span lang="en-US"><strong>Adapter</strong>. Он </span><span lang="ru">указывает </span><strong><span lang="en-US">RecyclerView</span></strong><span lang="ru">, что нужно отобразить и каким образом. Для этого ему нужны данные. Поэтому внутри класса </span><strong><span lang="en-US">PostsAdapter </span></strong><span lang="ru">необходимо создать поле с данными. </span><span lang="ru">Для первого запуска мы сделаем поле </span><span lang="en-US">private <code class="EnlighterJSRAW" data-enlighter-language="java">List&lt;String&gt; data </code></span><span lang="ru">для заглушки (позже мы переделаем это для работы с данными из </span><strong><span lang="en-US">SQLite </span></strong><span lang="ru">базы данных) и попробуем вывести список из ранее заданных строк</span></span>
-
-<span style="color: #000000;">Теперь как отображать данные. За это отвечает класс <strong>RecyclerView.ViewHolder</strong>. Наследуясь от него мы сможем создать свой класс, в которым опишем, как будет выглядеть каждый элемент нашего списка.</span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> </span><span lang="ru">Внутри класса </span><strong><span lang="en-US">PostsAdapter</span></strong><span lang="ru"> нужно создать </span><span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">public class PostHolder</code></span><span lang="en-US"> и </span><span lang="ru">унаследовать его от класса <strong>RecyclerView.ViewHolder</strong>. Далее реализовать конструктор класса </span><strong><span lang="en-US">PostHolder</span></strong><span lang="ru">, в котором указать входным параметром </span><span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">View v </code></span><span lang="ru">. И в первой строчке конструктора вызвать </span><span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">super(v)</code></span></span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">public class PostHolder extends RecyclerView.ViewHolder{
-  public PostHolder(View v){
-    super(v);
-  }
-}</pre>
-<span style="color: #000000;"><strong><span lang="en-US">PostHolder</span></strong> готов к использованию. <span lang="ru">Теперь укажем внутри него то, что будет отображать наш <strong>Adapter</strong></span><span lang="ru"> в каждом элементе <strong><span lang="en-US">RecyclerView</span></strong></span><span lang="ru">.</span></span>
-
-<span style="color: #000000;">[su_spoiler title="Первым делом создадим представление элемента"]</span>
-
-<span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">По пути <em>/res/layout</em> создаём файл </span><em><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">post</span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">.xml</span></em></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. В этом файле</span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">, внутри главного контейнера создать </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="xml">TextView</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> виджет</span></span><span style="font-family: Calibri; font-size: 11pt; color: #000000;">. Указать у него id</span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. Желательно в размерах ширины и высоты указать </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="xml">wrap_content</code></span></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. Сейчас мы хотим вывести вертикальный список с элементами, которые растягиваются по всей ширине. Необходимо проверить чтобы у главного контейнера размер высоты стоял </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="xml">wrap_content</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> (иначе каждый элемент растянется по всей высоте экрана)</span></span>
-
-<span style="color: #000000;">[/su_spoiler]</span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"&gt;
-    &lt;TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/&gt;
-&lt;/LinearLayout&gt;</pre>
-<span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Далее добавим изменения в класс </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostHolder</span></strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">. </span></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Создадим внутри</span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> поле </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">public TextView text</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. Это поле указывает на виджет, который будет использоваться для вывода некоторого текста в элементах нашего списка</span></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. Далее внутри конструктора</span> <span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">класса </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostHolder</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> инициализируем наш </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">text</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> с помощью вызова метода </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">v.findViewById</code></span></span>
-
-<span style="font-family: Calibri; font-size: 11pt; color: #000000;">Теперь <strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostHolder </span></strong>настроен и пора использовать его в нашем <strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostsAdapter</span></strong> </span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. Унаследуем <strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostsAdapter</span></strong> </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">от </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">RecyclerView.Adapter&lt;PostsAdapter.PostHolder&gt;</span></strong></span>
-
-<span style="color: #000000;">[su_spoiler title="Нужно обязательно реализовать три метода"]</span>
-<ul style="margin-left: .375in; direction: ltr; margin-top: 0in; margin-bottom: 0in;" type="circle">
- 	<li style="margin-top: 0; margin-bottom: 0; vertical-align: middle;"><span style="color: #000000;"><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">getItemCount</code> - </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">это метод в который нужно вернуть количество элементов, которое адаптер будет готов отрисовать</span></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. Сейчас у нас простая реализация и мы хотим вывести все элементы которые содержаться в </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">List&lt;String&gt; data</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. Поэтому в методе </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">getItemCount</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> мы вернём </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">data.size()</code></span></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. И добавим перед </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">return</code> </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">проверку. </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">if(data == null) </code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">пусть при таком условии </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">getItemCount</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> вернёт 0. Таким образом мы избежим </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><strong>NullPointerException</strong> </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">и правильно обработаем ситуацию, при которой данных нет.</span></span></li>
- 	<li style="margin-top: 0; margin-bottom: 0; vertical-align: middle;"><span style="color: #000000;"><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">onCreateViewHolder</code> - </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">в этом методе нужно создать холдер и вернуть его. Именно этот холдер будет указывать, что отображать в каждом элементе списка</span></span>
-<ul style="margin-left: .375in; direction: ltr; margin-top: 0in; margin-bottom: 0in;" type="disc">
- 	<li style="margin-top: 0; margin-bottom: 0; vertical-align: middle;"><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">У нас есть реализация холдера - </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostHolder</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. И </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">onCreateViewHolder</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> должен быть настроен для того, чтобы мы вернули именно </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostHolder</span></strong></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. А чтобы создать </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostHolder</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> нам необходим</span> <span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">экземпляр класса </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">View</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">, и для его создания мы воспользуемся методом который применяли при создании фрагмента</span></span></li>
- 	<li style="margin-top: 0; margin-bottom: 0; vertical-align: middle;"><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Получим </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><strong>View</strong> </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">с помощью <strong>LayoutInflater</strong> и его метода <code class="EnlighterJSRAW" data-enlighter-language="java">inflate</code>. Только <strong>LayoutInflater</strong> нам нужно будет создать самим, используя статический метод <code class="EnlighterJSRAW" data-enlighter-language="java">from</code>. Для этого метода необходим экземпляр класса </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">Context</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. Используем объект </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">context</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> класса </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostsAdapter</span></strong></span></li>
- 	<li style="margin-top: 0; margin-bottom: 0; vertical-align: middle;"><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Получение </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><strong>View</strong> </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">с помощью <code class="EnlighterJSRAW" data-enlighter-language="java">inflate</code> было описано ранее. Теперь на вход этому методу необходимо подать идентификатор нашего представления <code class="EnlighterJSRAW" data-enlighter-language="java">R.layout.post</code>, объект класса </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">ViewGroup</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">, входящий параметр метода </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">onCreateViewHolder</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">, и </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">false</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. </span></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">И вернуть в конце метода </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">onCreateViewHolder</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> объект класса </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostHolder</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. То есть использовать полученный </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">View v</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">и</span> <span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">вызвать </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">new PostHolder(v)</code></span></span></li>
-</ul>
-</li>
- 	<li style="margin-top: 0; margin-bottom: 0; vertical-align: middle;"><span style="color: #000000;"><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">onBindViewHolder</code> - </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">этот метод будет вызываться каждый раз, когда адаптеру потребуется отрисовать новый элемент. На входе получаем готовый объект холдера (в нашем конкретном случае это </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostHolder</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">)</span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"> - <code class="EnlighterJSRAW" data-enlighter-language="java">holder</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> и номер элемента</span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"> - <code class="EnlighterJSRAW" data-enlighter-language="java">position</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. Используя эти два параметра можно обозначить логику отрисовки элементов. Так сейчас мы укажем, что у каждого </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostHolder</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> будет применяться текст из </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">data</code> </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">в элемент </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">text</code>. </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Для этого внутри метода </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">onBindViewHolder</span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> мы укажем</span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"> <code class="EnlighterJSRAW" data-enlighter-language="java">holder.text.setText(data.get(position))</code>. </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Что значит - каждому </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">n </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">элементу </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">holder.text </code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">отрисовать текст из </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">n </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">элемента </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">data</code></span></span></li>
-</ul>
-<span style="color: #000000;">[/su_spoiler]</span>
-<blockquote><span style="color: #000000;"><span lang="en-US"><strong>AndroidStudio</strong> </span><span lang="ru">должна помочь реализовать эти методы автоматически при наследовании от </span><strong><span lang="en-US">RecyclerView.Adapter&lt;PostsAdapter.PostHolder&gt;</span></strong></span></blockquote>
-<span style="color: #000000;"><span lang="ru">И осталось создать систему при которой будет возможно изменять данные у адаптера. То есть</span><span lang="en-US"> <code class="EnlighterJSRAW" data-enlighter-language="java">List&lt;String&gt; data</code></span><span lang="ru">. Для этого создаём в классе </span><strong><span lang="en-US">PostsAdapter</span></strong><span lang="ru"> метод </span><span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">public void swapData(List&lt;String&gt; d)</code></span><span lang="ru">. Внутри этого метода присваиваем объект </span><span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">d</code></span><span lang="ru"> к </span><span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">data</code>.</span></span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">@Override
-public PostHolder onCreateViewHolder(ViewGroup parent, int viewType){
-  LayoutInflater inflater = LayoutInflater.from(context);
-  View v = inflater.inflate(R.layout.post, parent, false);
-  return new PostHolder(v);
-}
-
-@Override
-public void onBindViewHolder(PostHolder holder, int position){
-  holder.text.setText(data.get(position));
-}
-
-@Override
-public int getItemCount(){
-  if (data == null){
-    return 0;
-  }
-  return data.size();
-}
-
-public void swapData(List&lt;String&gt; d){
-  this.data = d;
-}</pre>
-[caption id="attachment_2624" align="aligncenter" width="243"]<a style="color: #000000;" href="http://java-help.ru/wp-content/uploads/2016/08/javahelp3.png"><img class="wp-image-2624 size-full" src="http://java-help.ru/wp-content/uploads/2016/08/javahelp3.png" alt="javahelp3" width="243" height="363" /></a> <span style="color: #000000;">MainFragment в своей логике использует функционал адаптера PostsAdapter</span>[/caption]
-
-<span style="color: #000000;"><strong><span lang="en-US">PostsAdapter</span></strong><span lang="ru"> готов к использованию</span></span>
-<h2><span style="color: #000000;"><span lang="ru">Подключаем </span><strong><span lang="en-US">PostsAdapter</span></strong><span lang="ru"> к RecyclerView<strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"> </span></strong></span><span lang="ru">в <strong>MainFragment</strong></span></span></h2>
-<span style="color: #000000;"><span lang="ru">Создадим в классе <strong>MainFragment</strong> поле </span><span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">private PostsAdapter adapter</code></span><span lang="ru"> и метод </span><span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">private void init</code></span><span lang="ru"> без входных параметров. Добавим вызов этого метода сразу после вызова метода </span><span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">initViews</code></span><span lang="ru"> внутри метода <code class="EnlighterJSRAW" data-enlighter-language="java">onCreateView</code>. Теперь внутри метода </span><span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">init</code></span><span lang="ru"> можно работать с виджетами и быть уверенными в том что они точно проинициализированы.</span></span>
-
-<span style="color: #000000;">[su_spoiler title="Реализуем PostsAdapter внутри <strong>MainFragment</strong> и подключим его к list_posts"]</span>
-
-<span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Внутри метода </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">init</code> </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">инициализируем <strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostsAdapter</span></strong> </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">и входящим параметром в конструктор <strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostsAdapter</span></strong> </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">передаём контекст используя метод </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">getActivity</code></span></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. Далее нужно добавить настройку к нашему </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">list_posts</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. В </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">RecyclerView</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> есть сущность которая руководит тем каким образом элементы будут идти друг за другом. Нам необходима самая простая реализация выводящая элементы по порядку в один столбец. Для этого мы воспользуемся классом <strong>LinearLayoutManager</strong>. Создадим экземпляр этого класса. В конструктор <strong>LinearLayoutManager</strong> необходимо подать контекст и мы его можем получить используя метод </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">getActivity</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. И укажем нашему </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">list_posts</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> это менеджер с помощью метода </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">setLayoutManager</code></span></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">.</span></span>
-
-<span style="color: #000000;">[/su_spoiler]</span>
-
-<span style="color: #000000;"><span lang="ru">Пришло время установить </span><span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">PostsAdapter adapter</code></span><span lang="ru">к </span><span lang="en-US"><code class="EnlighterJSRAW" data-enlighter-language="java">RecyclerView list_posts</code></span><span lang="ru">. Это можно сделать вызвав метод <code class="EnlighterJSRAW" data-enlighter-language="java">setAdapter</code> у <code class="EnlighterJSRAW" data-enlighter-language="java">list_posts</code></span></span>
-
-<span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Теперь адаптер и </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">RecyclerView</span></strong><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> работают вместе. Но <strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">RecyclerView</span></strong>  никаких данных пока не отображает. </span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Для того чтобы создать эти данные мы с</span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">ледующей строкой после <code class="EnlighterJSRAW" data-enlighter-language="java">list_posts.setAdapter(adapter)</code> создадим объект класса </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">List&lt;String&gt;</code></span></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> и проинициализируем его</span></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">. Добавим в него</span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> несколько элементов</span></span><span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> и укажем адаптеру, что мы хотим использовать эти данные. Это можно сделать с помощью метода </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">swapData</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">, который мы специально для этого сделали в классе </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostsAdapter</span></strong></span>
-<pre class="EnlighterJSRAW" data-enlighter-language="null">public class MainFragment extends Fragment{
-    private RecyclerView list_posts;
-
-    private PostsAdapter adapter;
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View v = inflater.inflate(R.layout.main_fragment, container, false);
-        initViews(v);
-        init();
-        return v;
-    }
-
-    private void initViews(View v){
-        list_posts = (RecyclerView) v.findViewById(R.id.list_posts);
-    }
-
-    private void init(){
-        adapter = new PostsAdapter(getActivity());
-        list_posts.setLayoutManager(new LinearLayoutManager(getActivity()));
-        list_posts.setAdapter(adapter);
-        List&lt;String&gt; data = new ArrayList&lt;&gt;();
-        data.add("text" + data.size());
-        data.add("text" + data.size());
-        data.add("text" + data.size());
-        data.add("text" + data.size());
-        data.add("text" + data.size());
-        data.add("text" + data.size());
-        data.add("text" + data.size());
-        data.add("text" + data.size());
-        adapter.swapData(data);
-    }
-}</pre>
-[caption id="attachment_2625" align="aligncenter" width="243"]<a style="color: #000000;" href="http://java-help.ru/wp-content/uploads/2016/08/javahelp4.png"><img class="wp-image-2625 size-full" src="http://java-help.ru/wp-content/uploads/2016/08/javahelp4.png" alt="javahelp4" width="243" height="363" /></a> <span style="color: #000000;">MainFragment использует функционал адаптера PostsAdapter для формирования представления элементов списка в своём представлении</span>[/caption]
-
-<span style="color: #000000;"><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">Теперь у нас есть список, </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">RecyclerView list_posts</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;">, который выводит данные из </span><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;"><code class="EnlighterJSRAW" data-enlighter-language="java">List&lt;String&gt; data</code></span><span lang="ru" style="font-family: Calibri; font-size: 11.0pt;"> таким образом, который мы реализовали в классе </span><strong><span lang="en-US" style="font-family: Calibri; font-size: 11.0pt;">PostsAdapter</span></strong></span>
-
-[caption id="attachment_2642" align="aligncenter" width="324"]<a style="color: #000000;" href="http://java-help.ru/wp-content/uploads/2016/09/2016-09-09ss.png"><img class="wp-image-2642 size-full" src="http://java-help.ru/wp-content/uploads/2016/09/2016-09-09ss.png" alt="2016-09-09ss" width="324" height="576" /></a> <span style="color: #000000;">Пример запущенного приложения на устройстве Nexus5 Android 6.0.1</span>[/caption]
-
-<span style="color: #000000;">Итак у нас получилось создать функционал для работы со списком. Мы создали <strong>MainActivity</strong> и <strong>MainFragment</strong>, связывающие логику и представление. <strong>MainActivity</strong> пока использует <strong>MainFragment</strong> как своё основное представление. Далее, чтобы работать над реализацией списка нам не нужно возвращаться к <strong>MainActivity</strong>. <strong>MainFragment</strong> реализует своё представление в виде списка. Далее для управления поведением этого списка нам не нужно возвращаться к <strong>MainFragment</strong>, так как эту задачу взял на себя <strong>PostsAdapter</strong> . <strong>PostsAdapter</strong> используется в связке с <strong>PostHolder</strong> для реализации логики того, как будет отображаться список. В следующей части мы реализуем хранение, чтение, запись данных о статьях с помощью библиотеки <strong>SQLiteDatabase</strong> входящей в состав <strong>AndroidSDK</strong>. И используем этот навык для передачи данных в <strong>PostsAdapter</strong> для последующей отрисовки в списке.</span>
+Итак у нас получилось создать функционал для работы со списком. Мы создали MainActivity и MainFragment, связывающие логику и представление. MainActivity пока использует MainFragment как своё основное представление. Далее, чтобы работать над реализацией списка нам не нужно возвращаться к MainActivity. MainFragment реализует своё представление в виде списка. Далее для управления поведением этого списка нам не нужно возвращаться к MainFragment, так как эту задачу взял на себя PostsAdapter . PostsAdapter используется в связке с PostHolder для реализации логики того, как будет отображаться список. В следующей части мы реализуем хранение, чтение, запись данных о статьях с помощью библиотеки SQLiteDatabase входящей в состав AndroidSDK. И используем этот навык для передачи данных в PostsAdapter для последующей отрисовки в списке.
