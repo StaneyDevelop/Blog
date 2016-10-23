@@ -1,5 +1,5 @@
 Написание кода
-Для запуска приложения необходимо создать точку входа - MainActivity. Для начала создания функционала связанного с UI создайте в главном пакете подпакет .ui. Наши activity мы будем хранить в пакете .ui.activities. Создайте класс MainActivity в пакете .ui.activities. Унаследуйте класс MainActivity от android.support.v7.app.AppCompatActivity (Убедитесь в том что gradle подтянул зависимость com.android.support:appcompat-v7)
+Для запуска приложения необходимо создать точку входа - MainActivity. Для начала создания функционала связанного с UI создайте в главном пакете подпакет .ui. Наши activity мы будем хранить в пакете .ui.activities. Создайте класс MainActivity в пакете .ui.activities. Унаследуйте класс MainActivity от android.support.v7.app.AppCompatActivity (для использования класса android.support.v4.app.Fragment и его возможностей)
 Для работы MainActivity необходимо создать его представление.
 Для этого в папке /res/layout создайте файл main_activity.xml. В AndroidStudio такой тип файлов в контекстном меню называется "Layout resource file". В файле обязательно должен быть указан главный контейнер этого представления. Укажите в качестве главного контейнера LinearLayout.
 Далее необходимо внести изменения в класс MainActivity.
