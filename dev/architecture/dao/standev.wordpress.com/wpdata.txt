@@ -1,0 +1,178 @@
+<span style="font-size:12pt;color:#000000;">Всем привет. Хочу рассказать, как, по моему мнению, можно красиво, просто и мощно обеспечить доступ к локальной базе данных. Это будет один из вариантов реализации патерна <strong>data access object</strong> на языке <strong>java</strong>.</span>
+
+<span style="font-size:16pt;color:#000000;">Теоретический проект</span>
+<span style="font-size:12pt;color:#000000;">Возьмём за пример приложение для <strong>Android</strong>. Контора, которая занимается предстраховыми осмотрами автомобилей, хочет автоматизировать процесс своих работников. Задача - обеспечить возможность собрать данные об автомобиле и передать их на обработку. 
+Проектирование показало, что у приложения будет 3 модуля:</span>
+<ul><span style="font-size:12pt;color:#009688;">
+<li>Авторизация</li>
+<li>Проведение осмотра</li>
+<li>Синхронизация</li>
+</span></ul>
+
+<span style="font-size:16pt;color:#000000;">Сущности</span>
+<span style="font-size:12pt;color:#000000;">Опишем сущности, которыми мы будем оперировать в коде. Опираясь на ТЗ этого проекта и api сервера, можно сделать несколько выводов. Будут существовать <em>пользователи</em>. Они будут получать с сервера <em>шаблон</em> сценария, по которому будет необходимо проводить <em>осмотр</em>. На основе этого информация будет собираться вместе в готовый <em>осмотр</em> и отправляться на сервер.</span>
+
+<span style="font-size:16pt;color:#000000;">Data access</span>
+<span style="font-size:12pt;color:#000000;">Итак у нас есть <em>пользователи</em>, <em>шаблоны</em> и <em>осмотры</em>. Выделим для них 3 разных доступа. В данном случае это будут 3 интерфейса:</span>
+<ul><span style="font-size:12pt;color:#009688;">
+<li>UsersAccess</li>
+<li>ScenariosAccess</li>
+<li>InspectionsAccess</li>
+</span></ul>
+<span style="font-size:12pt;color:#000000;">Далее создадим наш <strong>data access object</strong>, который будет эти доступы предоставлять. Снова интерфейс:</span>
+```java
+interface DAO
+{
+    UsersAccess usersAccess();
+    ScenariosAccess scenariosAccess();
+    InspectionsAccess inspectionsAccess();
+}
+```
+<span style="font-size:12pt;color:#000000;">Теперь мы имеем все необходимые доступы, только пока они никаких данных не отдают и не изменяют.</span>
+
+<span style="font-size:16pt;color:#000000;">Data models</span>
+<span style="font-size:12pt;color:#000000;">Создадим модели, которые будут описывать необходимые операции с сущностями. Начнём с <em>пользователей</em>. Что в данном проекте нам будет нужно с ними делать? В ТЗ сказано, что с одного устройства могут заходить разные пользователи. Значит нам нужно будет хранить список. Так же нам известно, что <em>пользователи</em> ничего не будут знать друг о друге. В таком случае можно создать модель:</span>
+```java
+interface UsersModels
+{
+    interface Users
+    {
+        User get(int id);
+        void add(User user);
+    }
+}
+```
+<span style="font-size:12pt;color:#000000;">Рассуждая подобным образом, можно сделать вывод о том, что у нас будет <strong>ScenariosModels</strong> и <strong>InspectionsModels</strong>. Только эти будут оперировать уже несколькими сущностями. <em>Шаблон</em> будет состоять из <em>типов шагов</em>. А <em>типы шагов</em> из <em>типов элементов</em>. Нужно организовать возможность добавлять данные в базу. Получать <em>шаблон</em> по уникальному ключу, список <em>типов шагов</em> по ссылке на <em>шаблон</em> и список <em>типов элементов</em> по ссылке на <em>тип шага</em>:</span>
+```java
+interface ScenariosModels
+{
+    interface ScenarioTypes
+    {
+        ScenarioType get(int id);
+        void add(ScenarioType type);
+    }
+    interface StepTypes
+    {
+        StepType get(int id);
+        List<StepType> getAll(ScenarioType scenarioType);
+        void add(StepType type);
+    }
+    interface ItemTypes
+    {
+        ItemType get(int id);
+        List<ItemType> getAll(StepType stepType);
+        void add(ItemType type);
+    }
+}
+```
+<span style="font-size:12pt;color:#000000;">Готовый <em>осмотр</em> будет состоять из <em>элементов</em>, а элементы из <em>данных</em>. Нужно организовать возможность получения осмотра по ключу, так же списка <em>осмотров</em> черновиков и списка готовых <em>осмотров</em>. И возможность удалить <em>осмотр</em>. По аналогии для всех подсущностей <em>осмотра</em>:</span>
+```java
+interface InspectionsModels
+{
+    interface Inspections
+    {
+        Inspection get(int id);
+        List<Inspection> getAll(User user);
+        void add(Inspection inspection);
+        void update(Inspection inspection);
+        void remove(Inspection inspection);
+    }
+    interface Steps
+    {
+        Step get(int id);
+        List<Step> getAll(Inspection inspection);
+        void add(Step step);
+        void removeAll(Inspection inspection);
+    }
+    interface Items
+    {
+        Item get(int id);
+        List<Item> getAll(Step step);
+        void add(Item item);
+        void removeAll(Step step);
+    }
+    interface Datas
+    {
+        Data get(int id);
+        List<Data> getAll(Item item);
+        void add(Data data);
+        void update(Data data);
+        void remove(Data data);
+        void removeAll(Item item);
+    }
+}
+```
+<span style="font-size:12pt;color:#000000;">Теперь передадим доступам их модели:</span>
+```java
+interface UsersAccess
+{
+    UsersModels.Users users();
+}
+```
+```java
+interface InspectionsAccess
+{
+    InspectionsModels.Inspections inspections();
+    InspectionsModels.Steps steps();
+    InspectionsModels.Items items();
+    InspectionsModels.Datas datas();
+}
+```
+```java
+interface ScenariosAccess
+{
+    ScenariosModels.ScenarioTypes scenarioTypes();
+    ScenariosModels.StepTypes stepTypes();
+    ScenariosModels.ItemTypes itemTypes();
+}
+```
+<span style="font-size:12pt;color:#000000;">И наш <strong>data access object</strong> готов.</span>
+
+<span style="font-size:16pt;color:#000000;">Используем data access object</span>
+<span style="font-size:12pt;color:#000000;">У нас есть три модуля. Каждый должен получить доступ только к той области базы данных, которая ему необходима для выполнения задачи. 
+При авторизации будет происходить работать только с <em>пользователями</em>. Поэтому этот модуль получит <strong>UsersAccess</strong>. Более того, так как необходимы операции только с одной сущностью можно урезать ответственность до модели <strong>Users</strong>.
+При прохождении <em>осмотра</em>, нужно будет опираться на <em>шаблон</em>, и на его основе составлять объект <em>осмотра</em>. Определять, каким образом отображать <em>шаги</em> и <em>элементы</em>. Т.е. в данном случае необходим полный доступ ко всем сущностям <em>шаблона</em> и сущностям <em>осмотра</em>. Так что этому модулю можно передать <strong>ScenariosAccess</strong> вместе с <strong>InspectionsAccess</strong>.
+<img class="aligncenter" src="https://standev.files.wordpress.com/2017/06/scenario_framed-1.png" width="300" height="514" />
+Во время синхронизации будет необходимо получать информацию о готовых <em>осмотрах</em> для передачи их на сервер. Со всеми <em>элементами</em> и прикреплёнными <em>данными</em>. В этот модуль стоит передать только <strong>InspectionsAccess</strong>.</span>
+<img class="aligncenter" src="https://standev.files.wordpress.com/2017/06/inspection_framed.png" width="300" height="514" />
+
+<span style="font-size:16pt;color:#000000;">Тестирование</span>
+<span style="font-size:12pt;color:#000000;">У нас уже описана логика по работе с бд. И мы даже используем её в модулях. Хотя пока нет реализации. Но мы уже можем написать тесты для всех <em>доступов</em> и <em>моделей</em>. Итак <strong>DAO</strong> должен успешно передавать <em>доступы</em> (не <span style="font-size:10pt;color:#ff5722;">null</span>). Точно так же для <em>доступов</em>. Они ничего не считают, а только передают данные. А вот для <em>моделей</em> можно написать тесты логики. Например модель <strong>Users</strong> должна изначально ничего не возвращать по ключу. Затем, после добавления объекта, уже вернуть по ключу новый объект. Обязательно со всеми его полями в точно таком же виде, в котором он был добавлен в базу. По такому же принципу покрываем тестами все <em>модели</em>.</span>
+```java
+class DAOTest
+{
+    private DAO dao;
+
+    @Test
+    public void checkAccesses()
+    {
+        assertNotNull("users access", dao.usersAccess());
+        assertNotNull("scenarios access", dao.scenariosAccess());
+        assertNotNull("inspections access", dao.inspectionsAccess());
+    }
+}
+```
+```java
+class UsersTest
+{
+    private UsersModels.Users users;
+
+    @Test
+    public void checkUsers()
+    {
+        int id = randomId();
+        assertNull("user must be null!", users.get(id));
+        User user1 = makeFakeUser(id);
+        users.add(user1);
+        User user2 = users.get(id);
+        assertNotNull("user with id:" + id + " must be exist!", user2);
+        assertEquals("users must be equals!", user1, user2);
+    }
+}
+```
+
+<span style="font-size:16pt;color:#000000;">Реализация</span>
+<span style="font-size:12pt;color:#000000;">Теперь осталось выбрать с помощью чего мы будем реализовать наш <strong>data access object</strong>. Например можно использовать <a href="https://developer.android.com/reference/android/database/sqlite/package-summary.html" target="_blank">SQLite</a>. Удобство такого метода в том, что мы сможем изменить реализацию или даже весь вид реализации, не затрагивая тех мест, где оно используется. Совершенно безболезненно. Приведу пример такого перехода на практике. Есть проект <a href="https://github.com/kepocnhh/MyM1yClean" target="_blank">MyM1y</a>, в котором реализуется система учёта финансовых операций. Изначально, для хранения данных (реализации интерфейса DAO) был выбран <a href="https://developer.android.com/reference/android/database/sqlite/package-summary.html" target="_blank">SQLite</a>. В процессе работы над проектом было принято решение заменить реализацию на более легковесную. Была выбрана другая библиотека <a href="https://github.com/StanleyProjects/Boxes" target="_blank">Boxes</a>. И реализация в проекте была полностью заменена. Это можно наблюдать в этом коммите <a href="https://github.com/kepocnhh/MyM1yClean/commit/ea5d973701bc9275ba67d09a9784aaa716a7c991" target="_blank">painless jump from sqlite to custom nosql orm</a>. Класс <a href="https://github.com/kepocnhh/MyM1yClean/commit/ea5d973701bc9275ba67d09a9784aaa716a7c991#diff-76e7ccade888287fc2dc611c37e64cbb" target="_blank">stan.mym1y.clean.db.SQLite.java</a> был полностью вырезан со всеми зависимости и заменён на <a href="https://github.com/kepocnhh/MyM1yClean/commit/ea5d973701bc9275ba67d09a9784aaa716a7c991#diff-2e8288f7b39e3d93f1ec346269835d9f" target="_blank">stan.mym1y.clean.boxes.Boxes.java</a>. Очень важно то, что это всё было сделано без прикосновений к модулям, в которых использовались эти реализации.</span>
+
+<span style="font-size:16pt;color:#000000;">Заключение</span>
+<span style="font-size:12pt;color:#000000;">Такой подход к разработке позволяет строго разделять ответственности при работе с базой данных. Чётко видеть уровни доступа к данным и легко оперировать ими. И всё это возможно не опираясь на реализацию. Это же позволяет использовать этот подход вместе с <strong>TDD</strong>. А реализацию теперь можно будет настраивать более тонко, без изменений в других модулях. Так же как и полностью заменить одну реализацию на другую.</span>
