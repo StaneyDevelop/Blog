@@ -1,4 +1,4 @@
-<span style="font-size:12pt;color:#000000;">Всем привет. Хочу рассказать, как, по моему мнению, можно красиво, просто и мощно обеспечить доступ к локальной базе данных. Это будет один из вариантов реализации патерна <strong>data access object</strong> на языке <strong>java</strong>.</span>
+<span style="font-size:12pt;color:#000000;">Всем привет. Хочу рассказать, как, по моему мнению, можно красиво, просто и мощно обеспечить доступ к локальной базе данных. Это будет один из вариантов реализации паттерна <strong>data access object</strong> на языке <strong>java</strong>.</span>
 
 <span style="font-size:16pt;color:#000000;">Теоретический проект</span>
 <span style="font-size:12pt;color:#000000;">Возьмём за пример приложение для <strong>Android</strong>. Контора, которая занимается предстраховыми осмотрами автомобилей, хочет автоматизировать процесс своих работников. Задача - обеспечить возможность собрать данные об автомобиле и передать их на обработку. 
@@ -31,7 +31,7 @@ interface DAO
 <span style="font-size:12pt;color:#000000;">Теперь мы имеем все необходимые доступы, только пока они никаких данных не отдают и не изменяют.</span>
 
 <span style="font-size:16pt;color:#000000;">Data models</span>
-<span style="font-size:12pt;color:#000000;">Создадим модели, которые будут описывать необходимые операции с сущностями. Начнём с <em>пользователей</em>. Что в данном проекте нам будет нужно с ними делать? В ТЗ сказано, что с одного устройства могут заходить разные пользователи. Значит нам нужно будет хранить список. Так же нам известно, что <em>пользователи</em> ничего не будут знать друг о друге. В таком случае можно создать модель:</span>
+<span style="font-size:12pt;color:#000000;">Создадим модели, которые будут описывать необходимые операции с сущностями. Начнём с <em>пользователей</em>. Что в данном проекте нам будет нужно с ними делать? В ТЗ сказано, что с одного устройства могут заходить разные пользователи. Значит нам нужно будет хранить список. Также нам известно, что <em>пользователи</em> ничего не будут знать друг о друге. В таком случае можно создать модель:</span>
 ```java
 interface UsersModels
 {
@@ -135,6 +135,47 @@ interface ScenariosAccess
 <img class="aligncenter" src="https://standev.files.wordpress.com/2017/06/scenario_framed-1.png" width="300" height="514" />
 Во время синхронизации будет необходимо получать информацию о готовых <em>осмотрах</em> для передачи их на сервер. Со всеми <em>элементами</em> и прикреплёнными <em>данными</em>. В этот модуль стоит передать только <strong>InspectionsAccess</strong>.</span>
 <img class="aligncenter" src="https://standev.files.wordpress.com/2017/06/inspection_framed.png" width="300" height="514" />
+<span style="font-size:12pt;color:#000000;">Необходимо продемонстрировать каким образом действовали ранее, чтобы получить данные:</span>
+```java
+class SomeModel
+{
+    private final Settings settings;
+
+    SomeModel(Settings s)
+    {
+        settings = s;
+    }
+
+    public List<Inspection> getInspections()
+    {
+        User currentUser = SQLite.getInstance().getUsers().getFromId(settings.getCurrentUserId());
+        return SQLite.getInstance().getInspections().getAllFromUser(currentUser);
+    }
+}
+```
+<span style="font-size:12pt;color:#000000;">Обратите внимание на то, что класс неявно получает зависимость от конкретной реализации (<strong>SQLite</strong>). К тому же, получает доступ ко всем частям базы данных, хотя не должен иметь возможности читать, изменять и удалять данные вне его ответственности. Как в теперь с применением <strong>DAO</strong> мы можем изменить этот подход?</span>
+```java
+class SomeModel
+{
+    private final Settings settings;
+    private final UsersModels.Users users;
+    private final InspectionsModels.Inspections inspections;
+
+    SomeModel(Settings s, UsersModels.Users us, InspectionsModels.Inspections is)
+    {
+        settings = s;
+        users = us;
+        inspections = is;
+    }
+
+    public List<Inspection> getInspections()
+    {
+        User currentUser = users.get(settings.getCurrentUserId());
+        return inspections.getAll(currentUser);
+    }
+}
+```
+<span style="font-size:12pt;color:#000000;">Теперь класс явно зависит только от модели <strong>Users</strong> и от модели <strong>Inspections</strong>. И только от этих двух моделей. Также стоить заметить, что теперь нигде не упоминается <strong>SQLite</strong>.</span>
 
 <span style="font-size:16pt;color:#000000;">Тестирование</span>
 <span style="font-size:12pt;color:#000000;">У нас уже описана логика по работе с бд. И мы даже используем её в модулях. Хотя пока нет реализации. Но мы уже можем написать тесты для всех <em>доступов</em> и <em>моделей</em>. Итак <strong>DAO</strong> должен успешно передавать <em>доступы</em> (не <span style="font-size:10pt;color:#ff5722;">null</span>). Точно так же для <em>доступов</em>. Они ничего не считают, а только передают данные. А вот для <em>моделей</em> можно написать тесты логики. Например модель <strong>Users</strong> должна изначально ничего не возвращать по ключу. Затем, после добавления объекта, уже вернуть по ключу новый объект. Обязательно со всеми его полями в точно таком же виде, в котором он был добавлен в базу. По такому же принципу покрываем тестами все <em>модели</em>.</span>
